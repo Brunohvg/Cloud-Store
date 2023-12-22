@@ -1,11 +1,10 @@
-
 <!DOCTYPE html>
 {% load static %}
 <html lang="pt-br">
   <head>
     <title>
       {% block title %}
-        Portal
+        Cloud Store
       {% endblock %}
     </title>
 
@@ -14,8 +13,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <meta name="description" content="Portal - Bootstrap 5 Admin Dashboard Template For Developers" />
-    <meta name="author" content="Xiaoying Riley at 3rd Wave Media" />
+    <meta name="description" content="Cloud Store - Sua mais nova integração com o NuvemShop" />
+    <meta name="author" content="Vidal Apps " />
     <link rel="shortcut icon" href="favicon.ico" />
 
     <!-- FontAwesome JS -->
@@ -187,7 +186,7 @@
                       <hr class="dropdown-divider" />
                     </li>
                     <li>
-                      <a class="dropdown-item" href="#">Sair</a>
+                      <a class="dropdown-item" href="{% url 'user_logout' %}">Sair</a>
                     </li>
                   </ul>
                 </div>
@@ -386,7 +385,7 @@
                 <!-- //nav-item -->
                 <li class="nav-item">
                   <!-- //Bootstrap Icons: https://icons.getbootstrap.com/ -->
-                  <a class="nav-link" href="#">
+                  <a class="nav-link" href="{% url 'user_logout' %}">
                     <span class="nav-icon">
                       <svg width="1em" height="1em" viewBox="0 0 16 16" class="bi bi-file-person" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" d="M12 1H4a1 1 0 0 0-1 1v10.755S4 11 8 11s5 1.755 5 1.755V2a1 1 0 0 0-1-1zM4 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H4z" />
@@ -410,35 +409,31 @@
     <!-- //app-header -->
 
     <!-- CONTEUDO PRINCIPAL CAPA -->
-    
+
     <div class="app-wrapper">
       <div class="app-content pt-3 p-md-3 p-lg-4">
         <div class="container-xl">
-          
           <h1 class="app-page-title">
             {% block titulo %}
-            configuracao
+              configuracao
             {% endblock %}
           </h1>
-      
 
           {% block cardalert %}
             <!-- //app-card -->
           {% endblock %}
-          
+
           {% block conteudo_principal %}
             <div class="row g-4 mb-4">
-                <div class="col-12 col-lg-12">
+              <div class="col-12 col-lg-12">
                 <!-- altera o tamnho do conteudo da pagina -->
                 <div class="app-card shadow-sm h-100">
-                    <div class="app-card-body p-3 p-lg-4">
-                        
-                    </div>
+                  <div class="app-card-body p-3 p-lg-4"></div>
                 </div>
                 <!-- //app-card-body -->
                 <a class="app-card-link-mask" href="#"></a>
-                </div>
-                <!-- //app-card -->
+              </div>
+              <!-- //app-card -->
             </div>
           {% endblock %}
           <!-- //col -->
@@ -453,14 +448,14 @@
     </div>
     <!-- //app-content -->
 
-    <!--                                                                           <footer class="app-footer" style="position: fixed; left: 0; bottom: 0; width: 100%;">
+    <!--                                                                            <footer class="app-footer" style="position: fixed; left: 0; bottom: 0; width: 100%;">
     <div class="container>
-     /* This template is free as long as you keep the footer attribution link. If you'd like to use the template without the attribution link, you can buy the commercial license via our website: themes.3rdwavemedia.com Thank you for your support. :) */                                                                            -->
-    <!--                                                                            <small class=" copyright">Designed with <span class="sr-only">love</span><i class="fas fa-heart"
+     /* This template is free as long as you keep the footer attribution link. If you'd like to use the template without the attribution link, you can buy the commercial license via our website: themes.3rdwavemedia.com Thank you for your support. :) */                                                                             -->
+    <!--                                                                             <small class=" copyright">Designed with <span class="sr-only">love</span><i class="fas fa-heart"
         style="color: #fb866a;"></i> by <a class="app-link" href="http://themes.3rdwavemedia.com"
         target="_blank">Xiaoying Riley</a> for developers</small>
     </div>
-  </footer>                                                                           -->
+  </footer>                                                                            -->
 
     <!-- //app-footer -->
 

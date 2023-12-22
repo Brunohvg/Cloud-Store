@@ -8,6 +8,7 @@ from django.contrib.auth import views as auth_views
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.views import PasswordResetView
 import logging
+from .models import UserPerfil
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +23,22 @@ def dashboard(request):
 
 @login_required
 def minha_conta(request):
+    if request.method == "POST":
+        nome = request.POST.get("nome")
+        sobrenome = request.POST.get("sobrenome")
+        telefone = request.POST.get("telefone")
+        if request.user.is_authenticated:
+            user_perfil = UserPerfil.objects.get(user=request.user)
+            user_perfil.nome = nome
+            user_perfil.sobrenome = sobrenome
+            user_perfil.telefone = telefone
+            user_perfil.save()
+
     return render(request, "auth_app\minha_conta\conta.html")
+
+
+def atualizar_dados(request):
+    ...
 
 
 # função de Login
@@ -56,6 +72,7 @@ def user_login(request):
     return render(request, "auth_app/user_login.html")
 
 
+# função de Cadastrar
 def user_signup(request):
     if request.method == "POST":
         signup_name = request.POST["signup-name"]
@@ -92,7 +109,7 @@ def user_signup(request):
 
 # função deslogar
 def user_logout(request):
-    return render(request, "auth_app/user_logout.html")
+    return redirect("user_login")
 
 
 # função de disparo de email
@@ -129,3 +146,15 @@ def check_user(request):
 
     form = PasswordResetForm()
     return render(request, "auth_app/password_reset.html", {"form": form})
+
+
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.contrib.auth.models import User
+from .models import UserPerfil
+
+
+@receiver(post_save, sender=User)
+def create_user_profile(sender, instance, created, **kwargs):
+    if created:
+        UserPerfil.objects.create(user=instance)
