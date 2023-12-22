@@ -1,0 +1,9 @@
+{% if messages %}
+  <div class="app-card alert alert-dismissible shadow-sm mb-4 border-left-decoration" role="alert">
+    <div class="inner">
+      {% for message in messages %}
+        {{ message }}
+      {% endfor %}
+    </div>
+  </div>
+{% endif %}
