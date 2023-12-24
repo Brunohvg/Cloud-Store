@@ -23,22 +23,28 @@ def dashboard(request):
 
 @login_required
 def minha_conta(request):
-    if request.method == "POST":
-        nome = request.POST.get("nome")
-        sobrenome = request.POST.get("sobrenome")
-        telefone = request.POST.get("telefone")
-        if request.user.is_authenticated:
-            user_perfil = UserPerfil.objects.get(user=request.user)
-            user_perfil.nome = nome
-            user_perfil.sobrenome = sobrenome
-            user_perfil.telefone = telefone
-            user_perfil.save()
+    if request.method == "POST" and request.user.is_authenticated:
+        return atualizar_dados(request)
 
     return render(request, "auth_app\minha_conta\conta.html")
 
 
 def atualizar_dados(request):
-    ...
+    request.user.first_name = request.POST.get("nome")
+    request.user.save()
+    user_perfil = UserPerfil.objects.get(user=request.user)
+    user_perfil.telefone = request.POST.get("telefone")
+    user_perfil.save()
+
+    messages.add_message(
+        request,
+        messages.INFO,
+        f"Seus dados foram atualizados com sucesso",
+    )
+
+    logger.info(f"O, Usuario {request.user}, foi atualizado com sucesso")
+
+    return render(request, "auth_app\minha_conta\conta.html")
 
 
 # função de Login
