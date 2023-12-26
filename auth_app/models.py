@@ -5,7 +5,6 @@ from django.contrib.auth.models import User
 # Create your models here.
 class UserPerfil(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    nome = models.CharField(max_length=100, blank=True)
     telefone = models.CharField(max_length=15, blank=True)
     """
     def pre_save(self, *args, **kwargs):
@@ -16,4 +15,4 @@ class UserPerfil(models.Model):
     """
 
     def __str__(self) -> str:
-        return self.nome
+        return self.user.first_name

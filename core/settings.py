@@ -151,22 +151,59 @@ SERVER_EMAIL = config("SERVER_EMAIL")
 EMAIL_BACKEND = config("EMAIL_BACKEND")
 
 
+import os
+import logging
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "handlers": {
-        "file": {
-            "level": "DEBUG",
+        "system_errors": {
+            "level": "ERROR",
             "class": "logging.FileHandler",
-            "filename": os.path.join(BASE_DIR, "logs", "integrations.log"),
+            "filename": os.path.join(BASE_DIR, "logs", "system_errors.log"),
+            "formatter": "verbose",
+        },
+        "login": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "logs", "login.log"),
+            "formatter": "verbose",
+        },
+        "signup": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "logs", "signup.log"),
+            "formatter": "verbose",
+        },
+        "email": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(BASE_DIR, "logs", "email.log"),
+            "formatter": "verbose",
         },
     },
     "loggers": {
-        "integrations": {
-            "handlers": ["file"],
-            "level": "DEBUG",
+        "system_errors": {
+            "handlers": ["system_errors"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+        "login": {
+            "handlers": ["login"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "signup": {
+            "handlers": ["signup"],
+            "level": "INFO",
+            "propagate": False,
+        },
+        "email": {
+            "handlers": ["signup"],
+            "level": "INFO",
             "propagate": False,
         },
     },
@@ -175,13 +212,18 @@ LOGGING = {
     },
 }
 
+# Configuração básica para evitar duplicação de logs
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s [%(levelname)s] %(module)s %(message)s",
     handlers=[
-        logging.FileHandler(os.path.join(BASE_DIR, "logs", "integrations.log")),
-        # logging.StreamHandler(),
+        logging.FileHandler(os.path.join(BASE_DIR, "logs", "debug.log")),
+        logging.StreamHandler(),
     ],
 )
 
-logger = logging.getLogger("integrations")
+# Loggers adicionais
+logger_system_errors = logging.getLogger("system_errors")
+logger_login = logging.getLogger("login")
+logger_signup = logging.getLogger("signup")
+logger_email = logging.getLogger("email")

@@ -1,16 +1,27 @@
+# Imports do Django
 from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
-from django.contrib.auth.decorators import login_required
 from django.urls import reverse
 from django.contrib import messages
-from django.contrib.auth import views as auth_views
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, views as auth_views
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.views import PasswordResetView
-import logging
+from django.core.mail import send_mail
+from django.db.models import Q
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
+# Imports locais
 from .models import UserPerfil
+import logging
+
 
 logger = logging.getLogger(__name__)
+logger_system_errors = logging.getLogger("system_errors")
+logger_login = logging.getLogger("login")
+logger_signup = logging.getLogger("signup")
+logger_email = logging.getLogger("email")
 
 
 # função de teste
@@ -26,9 +37,10 @@ def minha_conta(request):
     if request.method == "POST" and request.user.is_authenticated:
         return atualizar_dados(request)
 
-    return render(request, "auth_app\minha_conta\conta.html")
+    return render(request, "auth_app/minha_conta/conta.html")
 
 
+@login_required
 def atualizar_dados(request):
     request.user.first_name = request.POST.get("nome")
     request.user.save()
@@ -44,7 +56,7 @@ def atualizar_dados(request):
 
     logger.info(f"O, Usuario {request.user}, foi atualizado com sucesso")
 
-    return render(request, "auth_app\minha_conta\conta.html")
+    return render(request, "auth_app/minha_conta/conta.html")
 
 
 # função de Login
@@ -78,7 +90,6 @@ def user_login(request):
     return render(request, "auth_app/user_login.html")
 
 
-# função de Cadastrar
 def user_signup(request):
     if request.method == "POST":
         signup_name = request.POST["signup-name"]
@@ -86,34 +97,41 @@ def user_signup(request):
         signup_password = request.POST["signup-password"]
 
         # Verifica se o usuário já existe pelo nome de usuário ou endereço de e-mail
-        existing_users = User.objects.filter(
-            username=signup_name
-        ) | User.objects.filter(email=signup_email)
-
-        if existing_users.exists():
-            # Usuário já existe, forneça uma mensagem informativa
+        try:
+            User.objects.get(username=signup_name.lower())
+        except User.DoesNotExist:
+            try:
+                User.objects.get(email=signup_email.lower())
+            except User.DoesNotExist:
+                # Usuário não existe, crie um novo usuário
+                new_user = User.objects.create_user(
+                    signup_name.lower().strip(),
+                    signup_email.lower().strip(),
+                    signup_password,
+                )
+                new_user.save()
+                # Redirecione para a página de login após o cadastro bem-sucedido
+                return redirect("user_login")
+            else:
+                messages.add_message(
+                    request,
+                    messages.INFO,
+                    f"Este email, {signup_email}, já está em uso no sistema",
+                )
+                logger_signup.info(f"O email, {signup_email} ja existe no sistema")
+        else:
             messages.add_message(
                 request,
                 messages.INFO,
-                f"O usuário '{signup_name}' ou e-mail '{signup_email}' já existe no nosso sistema.",
+                f"Este usuario, {signup_name}, já está em uso no sistema",
             )
-        else:
-            # Usuário não existe, crie um novo usuário
-            new_user = User.objects.create_user(
-                signup_name.lower(), signup_email.lower(), signup_password
-            )
-            new_user.save()
-
-            # Envie um e-mail de confirmação ou outras ações necessárias
-            disparar_email(date=new_user)
-
-            # Redirecione para a página de login após o cadastro bem-sucedido
-            return redirect("user_login")
+            logger_signup.info(f"O usuario, {signup_name} ja existe no sistema")
 
     return render(request, "auth_app/user_signup.html")
 
 
 # função deslogar
+@login_required
 def user_logout(request):
     return redirect("user_login")
 
@@ -152,12 +170,6 @@ def check_user(request):
 
     form = PasswordResetForm()
     return render(request, "auth_app/password_reset.html", {"form": form})
-
-
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.contrib.auth.models import User
-from .models import UserPerfil
 
 
 @receiver(post_save, sender=User)
