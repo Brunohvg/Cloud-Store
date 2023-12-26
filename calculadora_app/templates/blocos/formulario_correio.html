@@ -1,0 +1,44 @@
+<div class="app-card app-card-account p-4">
+    <form class="row g-3" action="" method="post">
+        {% csrf_token %}
+
+        <div class="col-md-12 ">
+            <label for="cep" class="form-label">CEP</label>
+            <input type="text" maxlength="9" class="form-control" id="cep" name="cep" placeholder="Digite seu CEP"
+                required />
+        </div>
+
+        <div class="col-md-3">
+            <label for="altura" class="form-label">Altura</label>
+            <input type="number" class="form-control" id="altura" name="altura" placeholder="Altura" value="2" />
+        </div>
+        <div class="col-md-3">
+            <label for="largura" class="form-label">Largura</label>
+            <input type="number" class="form-control" id="largura" name="largura" placeholder="Largura" value="12" />
+            {{ erro }}
+        </div>
+        <div class="col-md-3">
+            <label for="comprimento" class="form-label">Comprimento</label>
+            <input type="number" class="form-control" id="comprimento" name="comprimento" placeholder="Comprimento"
+                value="17" />
+        </div>
+        <div class="col-md-3">
+            <label for="peso" class="form-label">Peso</label>
+            <input type="number" class="form-control" id="peso" name="peso" placeholder="Peso" min="0" max="30"
+                value="2" required />
+        </div>
+        <div class="col-md-12">
+            <button class="btn app-btn-primary" type="submit">CONSULTAR</button>    
+        </div>
+    </form>
+
+    {% if cep %}
+    <div class="card-header text-center custom-texto-valor p-4">
+        <h6>
+            <p class="custom-texto-valor">Endereço para entrega</p>
+            <p class="custom-texto-valor">{{ rua }}, {{ bairro }} - {{ cidade }} - {{ uf }} - {{ cep }}</p>
+        </h6>
+    </div>
+    {% endif %}
+</div>
+</div>
